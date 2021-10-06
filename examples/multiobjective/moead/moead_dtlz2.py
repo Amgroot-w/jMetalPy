@@ -7,6 +7,11 @@ from jmetal.util.solution import read_solutions, print_function_values_to_file, 
 from jmetal.util.termination_criterion import StoppingByEvaluations
 
 if __name__ == '__main__':
+
+    import os
+    os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
+    print('当前运行路径更改为：', os.getcwd())
+
     problem = DTLZ2()
     problem.reference_front = read_solutions(filename='resources/reference_front/DTLZ2.3D.pf')
 
