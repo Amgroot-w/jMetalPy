@@ -12,6 +12,13 @@ Program to  configure and run the NSGA-II algorithm configured with standard set
 """
 
 if __name__ == '__main__':
+
+    # 更改工作路径，若不更改则无法读取参考PF面
+    # 无参考PF面不会影响算法运行结果，只是最后画图的时候没有画出参考PF面而已！
+    # **见源码jmetal\lab\visualization\streaming.py中StreamingPlot类
+    import os
+    os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
+
     problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
