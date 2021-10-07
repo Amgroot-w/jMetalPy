@@ -166,8 +166,12 @@ class PlotFrontToFileObserver(Observer):
 
                     if termination_criterion_is_met:
                         if self.counter > 0:
-                            igd = InvertedGenerationalDistance(self.last_front)
-                            igd_value = igd.compute(solutions)
+                            # 解决bug：IGD指标的传入参数只能是np数组（被原作者于2020年2月pull request）
+                            reference_front = [s.objectives for s in self.last_front]
+                            solutions_arr = [s.objectives for s in solutions]
+
+                            igd = InvertedGenerationalDistance(reference_front)
+                            igd_value = igd.compute(solutions_arr)
                         else:
                             igd_value = 1
 
