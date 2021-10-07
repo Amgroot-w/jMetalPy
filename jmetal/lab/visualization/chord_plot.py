@@ -109,6 +109,7 @@ def hover_over_bin(event, handle_tickers, handle_plots, colors, fig):
                 fig.canvas.draw_idle()
 
 
+# 画和弦图的话，导入这个函数即可
 def chord_diagram(solutions: List[FloatSolution], nbins='auto', ax=None, obj_labels=None,
                   prop_labels=dict(fontsize=13, ha='center', va='center'), pad=6):
     points_matrix = np.array([s.objectives for s in solutions])

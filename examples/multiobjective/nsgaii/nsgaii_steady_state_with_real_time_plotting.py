@@ -1,7 +1,7 @@
 from jmetal.algorithm.multiobjective.nsgaii import NSGAII
 from jmetal.lab.visualization import InteractivePlot, Plot
 from jmetal.operator import SBXCrossover, PolynomialMutation
-from jmetal.problem import ZDT1
+from jmetal.problem import ZDT1, DTLZ1
 from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 from jmetal.util.solution import read_solutions, print_function_values_to_file, \
     print_variables_to_file
@@ -13,10 +13,10 @@ update frequency is set to 100 evaluations.
 """
 
 if __name__ == '__main__':
-    problem = ZDT1()
+    problem = DTLZ1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
-    max_evaluations = 25000
+    max_evaluations = 100
     algorithm = NSGAII(
         problem=problem,
         population_size=100,

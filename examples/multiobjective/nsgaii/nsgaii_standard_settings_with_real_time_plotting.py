@@ -13,16 +13,16 @@ Program to  configure and run the NSGA-II algorithm configured with standard set
 
 if __name__ == '__main__':
 
-    # 更改工作路径，若不更改则无法读取参考PF面
-    # 无参考PF面不会影响算法运行结果，只是最后画图的时候没有画出参考PF面而已！
-    # **见源码jmetal\lab\visualization\streaming.py中StreamingPlot类
-    import os
-    os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
+    # # 更改工作路径，若不更改则无法读取参考PF面
+    # # 无参考PF面不会影响算法运行结果，只是最后画图的时候没有画出参考PF面而已！
+    # # **见源码jmetal\lab\visualization\streaming.py中StreamingPlot类
+    # import os
+    # os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
 
     problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
-    max_evaluations = 25000
+    max_evaluations = 1000
     algorithm = NSGAII(
         problem=problem,
         population_size=100,
@@ -45,6 +45,10 @@ if __name__ == '__main__':
     # Plot interactive front
     plot_front = InteractivePlot(title='Pareto front approximation. Problem: ' + problem.get_name(), reference_front=problem.reference_front, axis_labels=problem.obj_labels)
     plot_front.plot(front, label=algorithm.label, filename=algorithm.get_name())
+
+    # 画和弦图
+    from jmetal.lab.visualization.chord_plot import chord_diagram
+    chord_diagram(solutions=front)  # chord_diagram是个函数，不是一个类，因此直接运行此函数即可
 
     # Save results to file
     print_function_values_to_file(front, 'FUN.' + algorithm.label)
