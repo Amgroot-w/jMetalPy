@@ -1,7 +1,7 @@
 from jmetal.algorithm.multiobjective.nsgaii import NSGAII
 from jmetal.lab.visualization import Plot, InteractivePlot
 from jmetal.operator import SBXCrossover, PolynomialMutation
-from jmetal.problem import ZDT1
+from jmetal.problem import ZDT1, DTLZ1
 from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 from jmetal.util.solution import read_solutions, print_function_values_to_file, \
     print_variables_to_file
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
-    max_evaluations = 1000
+    max_evaluations = 10000
     algorithm = NSGAII(
         problem=problem,
         population_size=100,
@@ -32,27 +32,29 @@ if __name__ == '__main__':
         termination_criterion=StoppingByEvaluations(max_evaluations=max_evaluations)
     )
 
+    # 1.实时图：streaming
     algorithm.observable.register(observer=ProgressBarObserver(max=max_evaluations))
     algorithm.observable.register(observer=VisualizerObserver(reference_front=problem.reference_front))
 
+    # 运行算法
     algorithm.run()
     front = algorithm.get_result()
 
-    # Plot front
+    # 2.静态图：static
     plot_front = Plot(title='Pareto front approximation. Problem: ' + problem.get_name(), reference_front=problem.reference_front, axis_labels=problem.obj_labels)
     plot_front.plot(front, label=algorithm.label, filename=algorithm.get_name())
 
-    # Plot interactive front
+    # 3.交互图：interactive
+    # 3.1 基于plotly框架的HTML交互
     plot_front = InteractivePlot(title='Pareto front approximation. Problem: ' + problem.get_name(), reference_front=problem.reference_front, axis_labels=problem.obj_labels)
     plot_front.plot(front, label=algorithm.label, filename=algorithm.get_name())
-
-    # 画和弦图
+    # 3.2 基于matplotlib的和弦图
     from jmetal.lab.visualization.chord_plot import chord_diagram
     chord_diagram(solutions=front)  # chord_diagram是个函数，不是一个类，因此直接运行此函数即可
 
-    # Save results to file
-    print_function_values_to_file(front, 'FUN.' + algorithm.label)
-    print_variables_to_file(front, 'VAR.'+ algorithm.label)
+    # # Save results to file
+    # print_function_values_to_file(front, 'FUN.' + algorithm.label)
+    # print_variables_to_file(front, 'VAR.'+ algorithm.label)
 
     print('Algorithm (continuous problem): ' + algorithm.get_name())
     print('Problem: ' + problem.get_name())
