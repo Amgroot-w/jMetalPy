@@ -9,9 +9,11 @@ from jmetal.util.archive import CrowdingDistanceArchive
 from jmetal.util.termination_criterion import StoppingByEvaluations
 
 
+# 这个函数完全可以自己重新写，因为我觉得他这样写有点不方便
+# 可以把problems和algorithm都放在该函数的传入参数中；或者都不放在传入参数中，都在函数内部进行定义。
 def configure_experiment(problems: dict, n_run: int):
     jobs = []
-    max_evaluations = 25000
+    max_evaluations = 25000  # 算法的内部参数（进化代数）
 
     for run in range(n_run):
         for problem_tag, problem in problems.items():
@@ -66,7 +68,7 @@ def configure_experiment(problems: dict, n_run: int):
 
 if __name__ == '__main__':
     # Configure the experiments
-    jobs = configure_experiment(problems={'ZDT1': ZDT1(), 'ZDT2': ZDT2(), 'ZDT3': ZDT3()}, n_run=25)
+    jobs = configure_experiment(problems={'ZDT1': ZDT1(), 'ZDT2': ZDT2(), 'ZDT3': ZDT3()}, n_run=3)
 
     # Run the study
     output_directory = 'data'
@@ -77,6 +79,6 @@ if __name__ == '__main__':
     # Generate summary file
     generate_summary_from_experiment(
         input_dir=output_directory,
-        reference_fronts='resources/reference_front',
+        reference_fronts=r'D:\Python Codes\jMetalPy\resources\reference_front',  # 更改为绝对路径
         quality_indicators=[GenerationalDistance(), EpsilonIndicator(), HyperVolume([1.0, 1.0])]
     )

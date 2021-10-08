@@ -25,9 +25,16 @@ LOGGER = logging.getLogger('jmetal')
 .. moduleauthor:: Antonio Benítez-Hidalgo <antonio.b@uma.es>
 """
 
+"""
+BUG解决：
+pd.DataFrame.ix() 方法更改为：pd.DataFrame.iloc()
+"""
 
 class Job:
-
+    """
+    一个job即为一个算法的执行任务
+    jobs即为所有执行任务的集合。jobs中所含job数（总评价次数）= 重复试验次数 * 问题个数 * 模型个数
+    """
     def __init__(self, algorithm: Algorithm, algorithm_tag: str, problem_tag: str, run: int):
         self.algorithm = algorithm
         self.algorithm_tag = algorithm_tag
@@ -63,6 +70,10 @@ class Experiment:
         self.output_dir = output_dir
 
     def run(self) -> None:
+        """
+        jobs中储存了所有需要评价的job，一个特定的job对应着三个特定要素：第几次重复试验、第几个模型、第几个问题
+        jobs中job的排列顺序无所谓，因为每个job都包含着上述三个信息，运行完之后根据上述三个信息写入文件即可！
+        """
         with ProcessPoolExecutor(max_workers=self.m_workers) as executor:
             for job in self.jobs:
                 output_path = os.path.join(self.output_dir, job.algorithm_tag, job.problem_tag)
@@ -445,8 +456,8 @@ def __averages_to_latex(central_tendency: pd.DataFrame, dispersion: pd.DataFrame
 
     # Write data lines
     for i in range(num_rows):
-        central_values = [v for v in central_tendency.ix[i]]
-        dispersion_values = [v for v in dispersion.ix[i]]
+        central_values = [v for v in central_tendency.iloc[i]]
+        dispersion_values = [v for v in dispersion.iloc[i]]
 
         # Sort mean/median values (the lower the better if minimization)
         # Note that mean/median values could be the same: in that case, sort by Std/IQR (the lower the better)
@@ -527,7 +538,7 @@ def __wilcoxon_to_latex(df: pd.DataFrame, caption: str, label: str, minimization
 
     # Write data lines
     for i in range(num_rows):
-        values = [val.replace('-', '\\text{--}\ ').replace('o', symbolo).replace('+', symbolplus) for val in df.ix[i]]
+        values = [val.replace('-', '\\text{--}\ ').replace('o', symbolo).replace('+', symbolplus) for val in df.iloc[i]]
         output.write('      \\textbf{{{0}}} & ${1}$ \\\\\n'.format(
             df.index[i], ' $ & $ '.join([str(val) for val in values]))
         )
