@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage[table*]{xcolor}
+\xdefinecolor{gray95}{gray}{0.65}
+\xdefinecolor{gray25}{gray}{0.8}
+\title{Median and IQR}
+\author{}
+\begin{document}
+\maketitle
+\section{Table}
+\begin{table}[!htp]
+  \caption{Median and Interquartile Range of the HV quality indicator.}
+  \label{table:HV}
+  \centering
+  \begin{scriptsize}
+  \begin{tabular}{c|ccc}
+      & \textbf{GDE3} & \textbf{NSGAII} & \textbf{SMPSO} \\\hline
+      \textbf{ZDT1} & $\cellcolor{gray25} 6.61e-01_{1.77e-04} $ & $ 6.60e-01_{1.11e-04} $ & $ \cellcolor{gray95} 6.62e-01_{7.89e-05}$ \\
+      \textbf{ZDT2} & $\cellcolor{gray25} 3.27e-01_{1.95e-04} $ & $ 3.27e-01_{4.18e-04} $ & $ \cellcolor{gray95} 3.29e-01_{7.34e-05}$ \\
+      \textbf{ZDT3} & $\cellcolor{gray95} 1.04e+00_{8.18e-05} $ & $ 1.04e+00_{1.09e-04} $ & $ \cellcolor{gray25} 1.04e+00_{7.58e-04}$ \\
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+\end{document}

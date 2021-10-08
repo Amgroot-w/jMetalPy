@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage[table*]{xcolor}
+\xdefinecolor{gray95}{gray}{0.65}
+\xdefinecolor{gray25}{gray}{0.8}
+\title{Median and IQR}
+\author{}
+\begin{document}
+\maketitle
+\section{Table}
+\begin{table}[!htp]
+  \caption{Median and Interquartile Range of the GD quality indicator.}
+  \label{table:GD}
+  \centering
+  \begin{scriptsize}
+  \begin{tabular}{c|ccc}
+      & \textbf{GDE3} & \textbf{NSGAII} & \textbf{SMPSO} \\\hline
+      \textbf{ZDT1} & $\cellcolor{gray25} 5.92e-04_{8.52e-05} $ & $ 1.28e-03_{1.69e-04} $ & $ \cellcolor{gray95} 5.52e-04_{2.11e-05}$ \\
+      \textbf{ZDT2} & $\cellcolor{gray25} 5.11e-04_{2.41e-05} $ & $ 1.09e-03_{2.14e-04} $ & $ \cellcolor{gray95} 4.23e-04_{2.94e-05}$ \\
+      \textbf{ZDT3} & $\cellcolor{gray95} 1.16e-03_{1.06e-04} $ & $ 1.27e-03_{1.08e-04} $ & $ \cellcolor{gray25} 1.24e-03_{1.73e-04}$ \\
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+\end{document}

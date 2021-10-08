@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage[table*]{xcolor}
+\xdefinecolor{gray95}{gray}{0.65}
+\xdefinecolor{gray25}{gray}{0.8}
+\title{Median and IQR}
+\author{}
+\begin{document}
+\maketitle
+\section{Table}
+\begin{table}[!htp]
+  \caption{Median and Interquartile Range of the EP quality indicator.}
+  \label{table:EP}
+  \centering
+  \begin{scriptsize}
+  \begin{tabular}{c|ccc}
+      & \textbf{GDE3} & \textbf{NSGAII} & \textbf{SMPSO} \\\hline
+      \textbf{ZDT1} & $\cellcolor{gray25} 1.18e-02_{1.68e-03} $ & $ 1.20e-02_{8.21e-04} $ & $ \cellcolor{gray95} 5.56e-03_{3.29e-04}$ \\
+      \textbf{ZDT2} & $1.21e-02_{2.45e-03} $ & $ \cellcolor{gray25} 1.05e-02_{1.48e-03} $ & $ \cellcolor{gray95} 5.27e-03_{7.94e-05}$ \\
+      \textbf{ZDT3} & $\cellcolor{gray25} 8.51e-03_{2.54e-03} $ & $ 8.95e-03_{9.94e-04} $ & $ \cellcolor{gray95} 6.47e-03_{3.95e-04}$ \\
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+\end{document}

@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage[table*]{xcolor}
+\xdefinecolor{gray95}{gray}{0.65}
+\xdefinecolor{gray25}{gray}{0.8}
+\title{Median and IQR}
+\author{}
+\begin{document}
+\maketitle
+\section{Table}
+\begin{table}[!htp]
+  \caption{Mean and Standard Deviation of the Time quality indicator.}
+  \label{table:Time}
+  \centering
+  \begin{scriptsize}
+  \begin{tabular}{c|ccc}
+      & \textbf{GDE3} & \textbf{NSGAII} & \textbf{SMPSO} \\\hline
+      \textbf{ZDT1} & $\cellcolor{gray25} 7.34e+00_{4.73e-02} $ & $ 7.53e+00_{6.78e-02} $ & $ \cellcolor{gray95} 6.25e+00_{5.79e-01}$ \\
+      \textbf{ZDT2} & $\cellcolor{gray25} 7.32e+00_{1.57e-01} $ & $ 7.51e+00_{9.83e-02} $ & $ \cellcolor{gray95} 6.29e+00_{3.65e-01}$ \\
+      \textbf{ZDT3} & $\cellcolor{gray25} 7.28e+00_{8.33e-02} $ & $ 7.56e+00_{1.66e-01} $ & $ \cellcolor{gray95} 3.81e+00_{1.04e-01}$ \\
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+\end{document}
