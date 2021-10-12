@@ -157,7 +157,7 @@ class SubsetSum(BinaryProblem):
         self.number_of_variables = 1
         self.number_of_constraints = 0
 
-        self.obj_directions = [self.MAXIMIZE, self.MINIMIZE]
+        self.obj_directions = [self.MAXIMIZE, self.MINIMIZE]  # 没啥用
         self.obj_labels = ['Sum', 'No. of Objects']
 
     def evaluate(self, solution: BinarySolution) -> BinarySolution:
@@ -170,7 +170,7 @@ class SubsetSum(BinaryProblem):
                 number_of_objects += 1
 
         if total_sum > self.C:
-            total_sum = self.C - total_sum * 0.1  # 减去的是惩罚项？？？
+            total_sum = self.C - total_sum * 0.1  # todo 减去的是惩罚项？？？
 
             if total_sum < 0.0:
                 total_sum = 0.0

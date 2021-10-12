@@ -3,6 +3,7 @@ from jmetal.operator import BitFlipMutation, SPXCrossover
 from jmetal.problem.multiobjective.unconstrained import SubsetSum
 from jmetal.util.solution import print_function_values_to_file, print_variables_to_file
 from jmetal.util.termination_criterion import StoppingByEvaluations
+from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 
 if __name__ == '__main__':
     C = 300500
@@ -33,14 +34,18 @@ if __name__ == '__main__':
         termination_criterion=StoppingByEvaluations(max_evaluations=25000)
     )
 
+    algorithm.observable.register(observer=ProgressBarObserver(max=1000))
+    algorithm.observable.register(observer=VisualizerObserver())
+
     algorithm.run()
     front = algorithm.get_result()
 
     import matplotlib.pyplot as plt
-    plt.scatter(W)
-    plt.show()
-
-
+    plt.figure(figsize=(30, 30))
+    for i in range(100):
+        plt.subplot(10, 10, i+1)
+        plt.scatter(range(len(W)), W, c=front[i].variables, s=4)
+        plt.show()
 
     # # Save results to file
     # print_function_values_to_file(front, 'FUN.' + algorithm.label)
