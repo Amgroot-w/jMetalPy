@@ -1,7 +1,7 @@
 from jmetal.algorithm.multiobjective.nsgaii import NSGAII
 from jmetal.operator import BitFlipMutation, SPXCrossover
 from jmetal.problem.multiobjective.unconstrained import SubsetSum
-from jmetal.util.solution import print_function_values_to_file, print_variables_to_file
+from jmetal.util.solution import print_function_values_to_file, print_variables_to_file, get_non_dominated_solutions
 from jmetal.util.termination_criterion import StoppingByEvaluations
 from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 
@@ -38,19 +38,30 @@ if __name__ == '__main__':
     algorithm.observable.register(observer=VisualizerObserver())
 
     algorithm.run()
-    front = algorithm.get_result()
+    front = get_non_dominated_solutions(algorithm.get_result())
 
     import matplotlib.pyplot as plt
-    plt.figure(figsize=(30, 30))
-    for i in range(100):
-        plt.subplot(10, 10, i+1)
-        plt.scatter(range(len(W)), W, c=front[i].variables, s=4)
-        plt.show()
+    import numpy as np
+
+    # %%
+    w_index = np.argsort(W)
+    w_sort = np.array(W)[w_index]
+    plt.figure(figsize=(15, 5))
+    plt.scatter(range(len(w_sort)), w_sort, c=np.array(front[0].variables[0])[w_index], s=10)
+    plt.show()
+
+    # todo 跑出来的实验结果有疑问：为什么子集所含元素个数那么多？不能先挑大的吗，这样不就只需很少的元素就能达到容量C的要求了吗
+
+    # plt.figure(figsize=(20, 10))
+    # for i in range(len(front)):
+    #     plt.subplot(2, 5, i+1)
+    #     plt.scatter(range(len(W)), W, c=front[i].variables, s=4)
+    #     plt.show()
 
     # # Save results to file
     # print_function_values_to_file(front, 'FUN.' + algorithm.label)
     # print_variables_to_file(front, 'VAR.'+ algorithm.label)
-    #
+
     # print(f'Algorithm: ${algorithm.get_name()}')
     # print(f'Problem: ${problem.get_name()}')
     # print(f'Computing time: ${algorithm.total_computing_time}')
