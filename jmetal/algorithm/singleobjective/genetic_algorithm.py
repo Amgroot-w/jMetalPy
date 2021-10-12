@@ -93,12 +93,13 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
 
         return offspring_population
 
+    # 这个函数一般会被具体的算法重写！因此此处的排序法算法几乎没有用到（也有点简单粗暴，只是按照第一维目标从小到大排序而已）
     def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
         population.extend(offspring_population)
 
-        population.sort(key=lambda s: s.objectives[0])
+        population.sort(key=lambda s: s.objectives[0])  # 按照从小到大排序，也就是说算法的进化方向为：目标函数最小化！
 
-        return population[:self.population_size]
+        return population[:self.population_size]  # 取排序后靠前的population_size个个体，剩余的个体废弃
 
     def get_result(self) -> R:
         return self.solutions[0]

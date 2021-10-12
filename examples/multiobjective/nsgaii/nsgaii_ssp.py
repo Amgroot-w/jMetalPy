@@ -36,10 +36,16 @@ if __name__ == '__main__':
     algorithm.run()
     front = algorithm.get_result()
 
-    # Save results to file
-    print_function_values_to_file(front, 'FUN.' + algorithm.label)
-    print_variables_to_file(front, 'VAR.'+ algorithm.label)
+    import matplotlib.pyplot as plt
+    plt.scatter(W)
+    plt.show()
 
-    print(f'Algorithm: ${algorithm.get_name()}')
-    print(f'Problem: ${problem.get_name()}')
-    print(f'Computing time: ${algorithm.total_computing_time}')
+
+
+    # # Save results to file
+    # print_function_values_to_file(front, 'FUN.' + algorithm.label)
+    # print_variables_to_file(front, 'VAR.'+ algorithm.label)
+    #
+    # print(f'Algorithm: ${algorithm.get_name()}')
+    # print(f'Problem: ${problem.get_name()}')
+    # print(f'Computing time: ${algorithm.total_computing_time}')

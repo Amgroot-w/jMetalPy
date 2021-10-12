@@ -170,7 +170,7 @@ class SubsetSum(BinaryProblem):
                 number_of_objects += 1
 
         if total_sum > self.C:
-            total_sum = self.C - total_sum * 0.1
+            total_sum = self.C - total_sum * 0.1  # 减去的是惩罚项？？？
 
             if total_sum < 0.0:
                 total_sum = 0.0

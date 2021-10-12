@@ -55,15 +55,16 @@ class CrowdingDistance(DensityEstimator[List[S]]):
         if size is 0:
             return
         elif size is 1:
-            front[0].attributes['crowding_distance'] = float("inf")
+            front[0].attributes['crowding_distance'] = float("inf")  # 只有一个个体，拥挤距离为无限大inf
             return
         elif size is 2:
-            front[0].attributes['crowding_distance'] = float("inf")
-            front[1].attributes['crowding_distance'] = float("inf")
+            front[0].attributes['crowding_distance'] = float("inf")  # 只有两个个体，拥挤距离均为无限大inf
+            front[1].attributes['crowding_distance'] = float("inf")  # 只有两个个体，拥挤距离均为无限大inf
             return
 
+        # 大于等于3个个体时，开始正常计算拥挤距离：
         for i in range(len(front)):
-            front[i].attributes['crowding_distance'] = 0.0
+            front[i].attributes['crowding_distance'] = 0.0  # 首先初始化每个个体的拥挤距离为0
 
         number_of_objectives = front[0].number_of_objectives
 
@@ -90,11 +91,11 @@ class CrowdingDistance(DensityEstimator[List[S]]):
                 front[j].attributes['crowding_distance'] = distance
 
     def sort(self, solutions: List[S]) -> List[S]:
-        solutions.sort(key=cmp_to_key(self.get_comparator().compare))
+        solutions.sort(key=cmp_to_key(self.get_comparator().compare))  # 排序依据：按照拥挤距离排序，越大排序越靠前
 
     @classmethod
     def get_comparator(cls) -> Comparator:
-        return SolutionAttributeComparator("crowding_distance", lowest_is_best=False)
+        return SolutionAttributeComparator("crowding_distance", lowest_is_best=False)  # 拥挤距离越大越好，因此设置为False
 
 
 class KNearestNeighborDensityEstimator(DensityEstimator[List[S]]):
