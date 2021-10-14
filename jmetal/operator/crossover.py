@@ -432,7 +432,7 @@ class CompositeCrossover(Crossover[CompositeSolution, CompositeSolution]):
         offspring2 = []
 
         number_of_solutions_in_composite_solution = solutions[0].number_of_variables
-
+        # 依次交叉并产生子代，最后再组装到一起
         for i in range(number_of_solutions_in_composite_solution):
             parents = [solutions[0].variables[i], solutions[1].variables[i]]
             children = self.crossover_operators_list[i].execute(parents)

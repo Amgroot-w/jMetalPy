@@ -256,7 +256,7 @@ class CompositeMutation(Mutation[Solution]):
 
     def execute(self, solution: CompositeSolution) -> CompositeSolution:
         Check.is_not_none(solution)
-
+        # 依次变异，最后再组装到一起
         mutated_solution_components = []
         for i in range(solution.number_of_variables):
             mutated_solution_components.append(self.mutation_operators_list[i].execute(solution.variables[i]))

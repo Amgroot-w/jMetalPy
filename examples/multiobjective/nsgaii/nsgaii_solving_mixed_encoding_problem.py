@@ -15,7 +15,9 @@ if __name__ == '__main__':
         problem=problem,
         population_size=100,
         offspring_population_size=100,
+        # 这里的变异算子虽然是composite变异，但实现的时候还是调用的单个个体变异，不同类型的全部变异完毕之后，最后组装到一起
         mutation=CompositeMutation([IntegerPolynomialMutation(0.01, 20), PolynomialMutation(0.01, 20.0)]),
+        # 这里的交叉算子虽然是composite交叉，但实现的时候还是调用的同类型个体交叉，不同类型的全部交叉完毕之后，最后组装到一起
         crossover=CompositeCrossover([IntegerSBXCrossover(probability=1.0, distribution_index=20),
                                       SBXCrossover(probability=1.0, distribution_index=20)]),
         termination_criterion=StoppingByEvaluations(max_evaluations=max_evaluations)
