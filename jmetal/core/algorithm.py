@@ -141,11 +141,11 @@ class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
         self.observable.notify_all(**observable_data)
 
     def step(self):
-        mating_population = self.selection(self.solutions)
-        offspring_population = self.reproduction(mating_population)
-        offspring_population = self.evaluate(offspring_population)
+        mating_population = self.selection(self.solutions)  # 选择
+        offspring_population = self.reproduction(mating_population)  # 交叉、变异
+        offspring_population = self.evaluate(offspring_population)  # 评价子代个体
 
-        self.solutions = self.replacement(self.solutions, offspring_population)
+        self.solutions = self.replacement(self.solutions, offspring_population)  # 进化选择：确定最终的子代
 
     def update_progress(self) -> None:
         self.evaluations += self.offspring_population_size
