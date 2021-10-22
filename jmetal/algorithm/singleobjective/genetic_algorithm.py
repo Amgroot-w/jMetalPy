@@ -71,35 +71,42 @@ class GeneticAlgorithm(EvolutionaryAlgorithm[S, R]):
 
         return mating_population
 
+    # jMetalPy的crossover和mutation均包含在了reproduction中
     def reproduction(self, mating_population: List[S]) -> List[S]:
         number_of_parents_to_combine = self.crossover_operator.get_number_of_parents()
 
+        # 注意这里的parents数设置是有要求的！它必须能够整除种群大小！
         if len(mating_population) % number_of_parents_to_combine != 0:
             raise Exception('Wrong number of parents')
 
-        offspring_population = []
+        offspring_population = []  # 初始化子代种群
         for i in range(0, self.offspring_population_size, number_of_parents_to_combine):
+            # 1.先产生parents
             parents = []
             for j in range(number_of_parents_to_combine):
+                # 这里的根据pop选取parents的方法是：假如设定的parents个数为2，则在pop中从前往后按顺序每次取2个个体作为parents
                 parents.append(mating_population[i + j])
 
+            # 2.交叉算子：对每一对parents做交叉，产生对应的一对offspring个体
             offspring = self.crossover_operator.execute(parents)
 
+            # 3.变异算子：对交叉操作产生的offspring逐个进行变异操作
             for solution in offspring:
-                self.mutation_operator.execute(solution)
-                offspring_population.append(solution)
+                self.mutation_operator.execute(solution)  # 变异
+                offspring_population.append(solution)  # 将完成变异的offspring加入子代种群中
                 if len(offspring_population) >= self.offspring_population_size:
-                    break
+                    break  # 若子代种群的个体数满足要求，则break
 
         return offspring_population
 
     # 这个函数一般会被具体的算法重写！因此此处的排序法算法几乎没有用到（也有点简单粗暴，只是按照第一维目标从小到大排序而已）
     def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
+        # 将父代种群和子代种群合并
         population.extend(offspring_population)
-
-        population.sort(key=lambda s: s.objectives[0])  # 按照从小到大排序，也就是说算法的进化方向为：目标函数最小化！
-
-        return population[:self.population_size]  # 取排序后靠前的population_size个个体，剩余的个体废弃
+        # 将合并后的种群按照第一维目标函数值从小到大排序（也就是说算法的进化方向为：目标函数最小化！）
+        population.sort(key=lambda s: s.objectives[0])
+        # 取排序后靠前的population_size个个体，剩余的个体丢弃
+        return population[:self.population_size]
 
     def get_result(self) -> R:
         return self.solutions[0]
