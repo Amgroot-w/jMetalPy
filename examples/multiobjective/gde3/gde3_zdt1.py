@@ -2,6 +2,7 @@ from jmetal.algorithm.multiobjective.gde3 import GDE3
 from jmetal.problem import ZDT1
 from jmetal.util.solution import read_solutions, print_function_values_to_file, print_variables_to_file
 from jmetal.util.termination_criterion import StoppingByKeyboard
+from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 
 if __name__ == '__main__':
     problem = ZDT1()
@@ -14,6 +15,8 @@ if __name__ == '__main__':
         f=0.5,
         termination_criterion=StoppingByKeyboard()
     )
+
+    algorithm.observable.register(observer=VisualizerObserver(reference_front=problem.reference_front))
 
     algorithm.run()
     front = algorithm.get_result()

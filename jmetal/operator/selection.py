@@ -18,7 +18,9 @@ S = TypeVar('S')
 .. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
 """
 
+""" 该模块定义了：7个选择算子、2个环境选择方法 """
 
+# 选择算子1：轮盘赌选择
 class RouletteWheelSelection(Selection[List[S], S]):
     """Performs roulette wheel selection.
     """
@@ -47,7 +49,7 @@ class RouletteWheelSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Roulette wheel selection'
 
-
+# 选择算子2：二元锦标赛选择
 class BinaryTournamentSelection(Selection[List[S], S]):
 
     def __init__(self, comparator: Comparator = DominanceComparator()):
@@ -82,7 +84,7 @@ class BinaryTournamentSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Binary tournament selection'
 
-
+# 选择算子3：最优解选择
 class BestSolutionSelection(Selection[List[S], S]):
 
     def __init__(self):
@@ -105,9 +107,9 @@ class BestSolutionSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Best solution selection'
 
-
+# 选择算子4：无放回抽样随机选择（一次调用返回所有个体）
 class NaryRandomSolutionSelection(Selection[List[S], S]):
-
+    """ 无放回抽样-随机选择 """
     def __init__(self, number_of_solutions_to_be_returned: int = 1):
         super(NaryRandomSolutionSelection, self).__init__()
         if number_of_solutions_to_be_returned < 0:
@@ -129,9 +131,9 @@ class NaryRandomSolutionSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Nary random_search solution selection'
 
-
+# 选择算子5：差分进化选择
 class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
-
+    """ 差分进化选择：怎么选的没看懂！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ """
     def __init__(self):
         super(DifferentialEvolutionSelection, self).__init__()
         self.index_to_exclude = None
@@ -156,9 +158,9 @@ class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
     def get_name(self) -> str:
         return "Differential evolution selection"
 
-
+# 选择算子6：有放回抽样随机选择（一次调用返回一个个体）
 class RandomSolutionSelection(Selection[List[S], S]):
-
+    """ 有放回抽样-随机选择 """
     def __init__(self):
         super(RandomSolutionSelection, self).__init__()
 
@@ -173,7 +175,7 @@ class RandomSolutionSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Random solution selection'
 
-
+# 重插入（环境选择/自然选择）：基于rank和拥挤距离
 class RankingAndCrowdingDistanceSelection(Selection[List[S], List[S]]):
 
     def __init__(self, max_population_size: int, dominance_comparator: Comparator = DominanceComparator()):
@@ -210,7 +212,7 @@ class RankingAndCrowdingDistanceSelection(Selection[List[S], List[S]]):
     def get_name(self) -> str:
         return 'Ranking and crowding distance selection'
 
-
+# 重插入（环境选择/自然选择）：基于rank和适应度
 class RankingAndFitnessSelection(Selection[List[S], List[S]]):
 
     def __init__(self,
@@ -300,7 +302,7 @@ class RankingAndFitnessSelection(Selection[List[S], List[S]]):
     def get_name(self) -> str:
         return 'Ranking and fitness selection'
 
-
+# 选择算子7：二元锦标赛选择（多个comparator）
 class BinaryTournament2Selection(Selection[List[S], S]):
 
     def __init__(self, comparator_list: List[Comparator]):
