@@ -191,19 +191,28 @@ class RankingAndCrowdingDistanceSelection(Selection[List[S], List[S]]):
 
         ranking = FastNonDominatedRanking(self.dominance_comparator)
         crowding_distance = CrowdingDistance()
-        ranking.compute_ranking(front)
+        ranking.compute_ranking(front)  # 计算front中所有个体的ranking
 
         ranking_index = 0
         new_solution_list = []
 
+        # 循环，直至重插入的新个体数满足子代种群大小
         while len(new_solution_list) < self.max_population_size:
+            # 若加上当前rank层上的个体数后还不够提供子代种群要求的个体数
             if len(ranking.get_subfront(ranking_index)) < (self.max_population_size - len(new_solution_list)):
+                # 则将当前rank层的所有个体加入新种群中
                 new_solution_list = new_solution_list + ranking.get_subfront(ranking_index)
+                # 循环至下一rank层继续进行环境选择
                 ranking_index += 1
+            # 若加上当前rank层上的个体数后能够提供子代种群要求的个体数
             else:
+                # 则先将该rank层的所有个体获取下来
                 subfront = ranking.get_subfront(ranking_index)
+                # 计算它们的拥挤距离指标
                 crowding_distance.compute_density_estimator(subfront)
+                # 依据拥挤距离指标将它们排序
                 sorted_subfront = sorted(subfront, key=lambda x: x.attributes['crowding_distance'], reverse=True)
+                # 按照排序结果从前到后依次选择，直至满足子代种群个数要求
                 for i in range((self.max_population_size - len(new_solution_list))):
                     new_solution_list.append(sorted_subfront[i])
 
