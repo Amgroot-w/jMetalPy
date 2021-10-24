@@ -15,7 +15,7 @@ from jmetal.util.ckecking import Check
 .. moduleauthor:: Antonio J. Nebro <antonio@lcc.uma.es>, Antonio Benítez-Hidalgo <antonio.b@uma.es>
 """
 
-
+# 1.不交叉：直接返回两个parents
 class NullCrossover(Crossover[Solution, Solution]):
     def __init__(self):
         super(NullCrossover, self).__init__(probability=0.0)
@@ -37,6 +37,9 @@ class NullCrossover(Crossover[Solution, Solution]):
 
 
 class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
+    """
+    部分匹配交叉，适用于组合优化
+    """
     def __init__(self, probability: float):
         super(PMXCrossover, self).__init__(probability=probability)
 
@@ -95,6 +98,9 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
 
 class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
+    """
+    循环交叉 todo
+    """
     def __init__(self, probability: float):
         super(CXCrossover, self).__init__(probability=probability)
 
@@ -136,28 +142,34 @@ class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
 
 class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
+    """
+    模拟二进制交叉
+    """
     __EPS = 1.0e-14
 
     def __init__(self, probability: float, distribution_index: float = 20.0):
         super(SBXCrossover, self).__init__(probability=probability)
-        self.distribution_index = distribution_index
+        self.distribution_index = distribution_index  # 公式中的n值，该值越大，交叉生成的子代与父代越接近
         if distribution_index < 0:
             raise Exception("The distribution index is negative: " + str(distribution_index))
 
     def execute(self, parents: List[FloatSolution]) -> List[FloatSolution]:
+        # parents要求：必须为两个，且均为float型变量
         Check.that(issubclass(type(parents[0]), FloatSolution), "Solution type invalid: " + str(type(parents[0])))
         Check.that(issubclass(type(parents[1]), FloatSolution), "Solution type invalid")
         Check.that(len(parents) == 2, 'The number of parents is not two: {}'.format(len(parents)))
 
-        offspring = [copy.deepcopy(parents[0]), copy.deepcopy(parents[1])]
+        offspring = [copy.deepcopy(parents[0]), copy.deepcopy(parents[1])]  # 初始化子代
         rand = random.random()
 
-        if rand <= self.probability:
-            for i in range(parents[0].number_of_variables):
+        # SBX算法涉及概率1（染色体重组概率）和概率2（条件重组概率），且强调概率1，把概率2设为定值0.5
+        if rand <= self.probability:  # 概率1：染色体重组概率（满足该概率，执行交叉操作）
+            for i in range(parents[0].number_of_variables):  # 逐个位点进行交叉操作
                 value_x1, value_x2 = parents[0].variables[i], parents[1].variables[i]
-
-                if random.random() <= 0.5:
+                if random.random() <= 0.5:  # 概率2：条件重组概率（满足该概率，在染色体最小片段上执行交叉操作）
+                    # 如果两个父代的差距大于阈值，我们才认为它们是不同的，此时再进行后续交叉
                     if abs(value_x1 - value_x2) > self.__EPS:
+                        # 保证y1<y2
                         if value_x1 < value_x2:
                             y1, y2 = value_x1, value_x2
                         else:
@@ -174,7 +186,8 @@ class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
                         else:
                             betaq = pow(1.0 / (2.0 - rand * alpha), 1.0 / (self.distribution_index + 1.0))
 
-                        c1 = 0.5 * (y1 + y2 - betaq * (y2 - y1))
+                        c1 = 0.5 * (y1 + y2 - betaq * (y2 - y1))  # 计算子代个体1
+
                         beta = 1.0 + (2.0 * (upper_bound - y2) / (y2 - y1))
                         alpha = 2.0 - pow(beta, -(self.distribution_index + 1.0))
 
@@ -183,8 +196,9 @@ class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
                         else:
                             betaq = pow(1.0 / (2.0 - rand * alpha), 1.0 / (self.distribution_index + 1.0))
 
-                        c2 = 0.5 * (y1 + y2 + betaq * (y2 - y1))
+                        c2 = 0.5 * (y1 + y2 + betaq * (y2 - y1))  # 计算子代个体2
 
+                        # 修复超过边界的解
                         if c1 < lower_bound:
                             c1 = lower_bound
                         if c2 < lower_bound:
@@ -200,6 +214,7 @@ class SBXCrossover(Crossover[FloatSolution, FloatSolution]):
                         else:
                             offspring[0].variables[i] = c1
                             offspring[1].variables[i] = c2
+                    # 如果两个父代的差距小于阈值，就认为它是相同的，此时不进行交叉，直接赋值给子代
                     else:
                         offspring[0].variables[i] = value_x1
                         offspring[1].variables[i] = value_x2
@@ -275,6 +290,7 @@ class IntegerSBXCrossover(Crossover[IntegerSolution, IntegerSolution]):
                         if c2 > upper_bound:
                             c2 = upper_bound
 
+                        # 多了一个修正环节：float型 -> int型
                         if random.random() <= 0.5:
                             offspring[0].variables[i] = int(c2)
                             offspring[1].variables[i] = int(c1)
@@ -300,7 +316,9 @@ class IntegerSBXCrossover(Crossover[IntegerSolution, IntegerSolution]):
 
 
 class SPXCrossover(Crossover[BinarySolution, BinarySolution]):
-
+    """
+    单点交叉：适用于二进制编码
+    """
     def __init__(self, probability: float):
         super(SPXCrossover, self).__init__(probability=probability)
 
@@ -326,11 +344,11 @@ class SPXCrossover(Crossover[BinarySolution, BinarySolution]):
                 variable_to_cut += 1
                 bits_count += len(parents[1].variables[variable_to_cut])
 
-            # 4. Compute the bit into the selected variable
+            # 4. Compute the bit into the selected variable（找到被切的variable的index）
             diff = bits_count - crossover_point
             crossover_point_in_variable = len(parents[1].variables[variable_to_cut]) - diff
 
-            # 5. Apply the crossover to the variable
+            # 5. Apply the crossover to the variable（刚好被切的那个染色体，对切点以后的染色体片段进行互换）
             bitset1 = copy.copy(parents[0].variables[variable_to_cut])
             bitset2 = copy.copy(parents[1].variables[variable_to_cut])
 
@@ -342,7 +360,7 @@ class SPXCrossover(Crossover[BinarySolution, BinarySolution]):
             offspring[0].variables[variable_to_cut] = bitset1
             offspring[1].variables[variable_to_cut] = bitset2
 
-            # 6. Apply the crossover to the other variables
+            # 6. Apply the crossover to the other variables（后面的整段variables直接替换）
             for i in range(variable_to_cut + 1, parents[0].number_of_variables):
                 offspring[0].variables[i] = copy.deepcopy(parents[1].variables[i])
                 offspring[1].variables[i] = copy.deepcopy(parents[0].variables[i])
@@ -364,20 +382,23 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
     best and rand variants depends on the third parent, according whether it represents the current of the "best"
     individual or a random_search one. The implementation of both variants are the same, due to that the parent selection is
     external to the crossover operator.
+
+    翻译翻译：best and rand variants取决于传入的3个父代中的第三个，取决于它是best个体还是random个体。而这两种对应的实现方法是一致的，因为传入
+            什么父代由外部决定，与本class无关。
     """
 
     def __init__(self, CR: float, F: float, K: float = 0.5):
         super(DifferentialEvolutionCrossover, self).__init__(probability=1.0)
         self.CR = CR
         self.F = F
-        self.K = K
+        self.K = K  # 这个变量是干嘛用的？
 
-        self.current_individual: FloatSolution = None
+        self.current_individual: FloatSolution = None  # “current_individual”这个变量会在外部被赋值！！！
 
     def execute(self, parents: List[FloatSolution]) -> List[FloatSolution]:
         """ Execute the differential evolution crossover ('best/1/bin' variant in jMetal).
         """
-        if len(parents) != self.get_number_of_parents():
+        if len(parents) != self.get_number_of_parents():  # parents数目必须为3
             raise Exception('The number of parents is not {}: {}'.format(self.get_number_of_parents(), len(parents)))
 
         child = copy.deepcopy(self.current_individual)
@@ -386,17 +407,20 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
         rand = random.randint(0, number_of_variables - 1)
 
         for i in range(number_of_variables):
+            # 当i=rand时不用判断直接交叉，当i为其他值时以self.CR为概率进行交叉
             if random.random() < self.CR or i == rand:
+                # 执行差分进化交叉操作
                 value = parents[2].variables[i] + self.F * (parents[0].variables[i] - parents[1].variables[i])
-
+                # 修复超过边界的解
                 if value < child.lower_bound[i]:
                     value = child.lower_bound[i]
                 if value > child.upper_bound[i]:
                     value = child.upper_bound[i]
+            # 若当前位点经过随机概率之后，不进行交叉
             else:
-                value = child.variables[i]
+                value = child.variables[i]  # 直接将当前个体的在该位点的值赋给该位点
 
-            child.variables[i] = value
+            child.variables[i] = value  # 将经过交叉操作后的实数值赋值给该位点
 
         return [child]
 

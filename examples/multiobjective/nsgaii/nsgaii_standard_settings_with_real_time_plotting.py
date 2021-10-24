@@ -1,7 +1,7 @@
 from jmetal.algorithm.multiobjective.nsgaii import NSGAII
 from jmetal.lab.visualization import Plot, InteractivePlot
 from jmetal.operator import SBXCrossover, PolynomialMutation
-from jmetal.problem import ZDT1, DTLZ1
+from jmetal.problem import ZDT1, DTLZ1, UF8
 from jmetal.util.observer import ProgressBarObserver, VisualizerObserver
 from jmetal.util.solution import read_solutions, print_function_values_to_file, \
     print_variables_to_file
@@ -19,10 +19,10 @@ if __name__ == '__main__':
     # import os
     # os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
 
-    problem = ZDT1()
+    problem = UF8()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
-    max_evaluations = 10000
+    max_evaluations = 1000
     algorithm = NSGAII(
         problem=problem,
         population_size=100,
