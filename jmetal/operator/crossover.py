@@ -99,7 +99,7 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 
 class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
     """
-    循环交叉 todo
+    循环交叉，适用于组合优化
     """
     def __init__(self, probability: float):
         super(CXCrossover, self).__init__(probability=probability)
@@ -108,26 +108,29 @@ class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
         if len(parents) != 2:
             raise Exception('The number of parents is not two: {}'.format(len(parents)))
 
+        # 注意这里offspring在初始化的时候，直接反转了父代的顺序
         offspring = [copy.deepcopy(parents[1]), copy.deepcopy(parents[0])]
         rand = random.random()
 
         if rand <= self.probability:
-            for i in range(parents[0].number_of_variables):
-                idx = random.randint(0, len(parents[0].variables[i]) - 1)
-                curr_idx = idx
-                cycle = []
+            # idx = random.randint(0, len(parents[0].variables[i]) - 1)  # 此处有个小bug
+            idx = random.randint(0, len(parents[0].variables) - 1)
+            curr_idx = idx
+            cycle = []
 
-                while True:
-                    cycle.append(curr_idx)
-                    curr_idx = parents[0].variables[i].index(parents[1].variables[i][curr_idx])
+            while True:
+                cycle.append(curr_idx)
+                # curr_idx = parents[0].variables[i].index(parents[1].variables[i][curr_idx])
+                curr_idx = parents[1].variables.index(parents[0].variables[curr_idx])
 
-                    if curr_idx == idx:
-                        break
+                if curr_idx == idx:
+                    break
 
-                for j in range(len(parents[0].variables[i])):
-                    if j in cycle:
-                        offspring[0].variables[i][j] = parents[0].variables[i][j]
-                        offspring[1].variables[i][j] = parents[0].variables[i][j]
+            # for j in range(len(parents[0].variables[i])):
+            for j in range(len(parents[0].variables)):
+                if j in cycle:
+                    offspring[0].variables[j] = parents[0].variables[j]
+                    offspring[1].variables[j] = parents[1].variables[j]
 
         return offspring
 
