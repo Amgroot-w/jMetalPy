@@ -15,7 +15,7 @@ from jmetal.util.ckecking import Check
 
 
 class NullMutation(Mutation[Solution]):
-
+    # 不变异，直接返回父代
     def __init__(self):
         super(NullMutation, self).__init__(probability=0)
 
@@ -27,7 +27,7 @@ class NullMutation(Mutation[Solution]):
 
 
 class BitFlipMutation(Mutation[BinarySolution]):
-
+    # 二进制编码：直接翻转
     def __init__(self, probability: float):
         super(BitFlipMutation, self).__init__(probability=probability)
 
@@ -36,7 +36,7 @@ class BitFlipMutation(Mutation[BinarySolution]):
 
         for i in range(solution.number_of_variables):
             for j in range(len(solution.variables[i])):
-                rand = random.random()
+                rand = random.random()  # 注意是对每一位都判断一下概率
                 if rand <= self.probability:
                     solution.variables[i][j] = True if solution.variables[i][j] is False else False
 
@@ -47,7 +47,7 @@ class BitFlipMutation(Mutation[BinarySolution]):
 
 
 class PolynomialMutation(Mutation[FloatSolution]):
-
+    # 多项式变异（实数编码）
     def __init__(self, probability: float, distribution_index: float = 0.20):
         super(PolynomialMutation, self).__init__(probability=probability)
         self.distribution_index = distribution_index
@@ -55,14 +55,14 @@ class PolynomialMutation(Mutation[FloatSolution]):
     def execute(self, solution: FloatSolution) -> FloatSolution:
         Check.that(issubclass(type(solution), FloatSolution), "Solution type invalid")
         for i in range(solution.number_of_variables):
-            rand = random.random()
+            rand = random.random()  # 对每一位都进行变异概率判断
 
             if rand <= self.probability:
                 y = solution.variables[i]
                 yl, yu = solution.lower_bound[i], solution.upper_bound[i]
 
                 if yl == yu:
-                    y = yl
+                    y = yl  # 当前位置的上下界值相等，直接赋值为该值
                 else:
                     delta1 = (y - yl) / (yu - yl)
                     delta2 = (yu - y) / (yu - yl)
@@ -78,6 +78,8 @@ class PolynomialMutation(Mutation[FloatSolution]):
                         deltaq = 1.0 - pow(val, mut_pow)
 
                     y += deltaq * (yu - yl)
+
+                    # 修复超过边界的解
                     if y < solution.lower_bound[i]:
                         y = solution.lower_bound[i]
                     if y > solution.upper_bound[i]:
@@ -92,7 +94,7 @@ class PolynomialMutation(Mutation[FloatSolution]):
 
 
 class IntegerPolynomialMutation(Mutation[IntegerSolution]):
-
+    # （int型）多项式变异，适用于整数编码：在上一个的基础上直接取了个整而已
     def __init__(self, probability: float, distribution_index: float = 0.20):
         super(IntegerPolynomialMutation, self).__init__(probability=probability)
         self.distribution_index = distribution_index
@@ -127,7 +129,7 @@ class IntegerPolynomialMutation(Mutation[IntegerSolution]):
                     if y > solution.upper_bound[i]:
                         y = solution.upper_bound[i]
 
-                solution.variables[i] = int(round(y))
+                solution.variables[i] = int(round(y))  # 取整
         return solution
 
     def get_name(self):
@@ -135,7 +137,7 @@ class IntegerPolynomialMutation(Mutation[IntegerSolution]):
 
 
 class SimpleRandomMutation(Mutation[FloatSolution]):
-
+    # 简单随机变异：在下界和上界之间随机产生一个数作为变异值
     def __init__(self, probability: float):
         super(SimpleRandomMutation, self).__init__(probability=probability)
 
@@ -154,7 +156,7 @@ class SimpleRandomMutation(Mutation[FloatSolution]):
 
 
 class UniformMutation(Mutation[FloatSolution]):
-
+    # 均匀变异
     def __init__(self, probability: float, perturbation: float = 0.5):
         super(UniformMutation, self).__init__(probability=probability)
         self.perturbation = perturbation
@@ -166,9 +168,10 @@ class UniformMutation(Mutation[FloatSolution]):
             rand = random.random()
 
             if rand <= self.probability:
+                # random.random(): 产生一个[0,1)范围内的随机数, 减去0.5是为了将中心移动到0处，即产生[-0.5,0.5)范围内的随机数
                 tmp = (random.random() - 0.5) * self.perturbation
-                tmp += solution.variables[i]
-
+                tmp += solution.variables[i]  # 当前值 + 因子*产生的随机数
+                # 修正解
                 if tmp < solution.lower_bound[i]:
                     tmp = solution.lower_bound[i]
                 elif tmp > solution.upper_bound[i]:
@@ -183,7 +186,8 @@ class UniformMutation(Mutation[FloatSolution]):
 
 
 class NonUniformMutation(Mutation[FloatSolution]):
-
+    # 非均匀变异
+    # 该变异方法将进化代数考虑在内，在进化过程的不同时期，产生变异值的策略不同（服从的分布不同），由当前进化代数决定
     def __init__(self, probability: float, perturbation: float = 0.5, max_iterations: int = 0.5):
         super(NonUniformMutation, self).__init__(probability=probability)
         self.perturbation = perturbation
@@ -203,7 +207,7 @@ class NonUniformMutation(Mutation[FloatSolution]):
                     tmp = self.__delta(solution.lower_bound[i] - solution.variables[i], self.perturbation)
 
                 tmp += solution.variables[i]
-
+                # 修正解
                 if tmp < solution.lower_bound[i]:
                     tmp = solution.lower_bound[i]
                 elif tmp > solution.upper_bound[i]:
@@ -214,25 +218,30 @@ class NonUniformMutation(Mutation[FloatSolution]):
         return solution
 
     def set_current_iteration(self, current_iteration: int):
+        # 获取当前的进化代数
         self.current_iteration = current_iteration
 
     def __delta(self, y: float, b_mutation_parameter: float):
+        # 该变异方法将进化代数考虑在内
         return (y * (1.0 - pow(random.random(),
                                pow((1.0 - 1.0 * self.current_iteration / self.max_iterations), b_mutation_parameter))))
 
     def get_name(self):
-        return 'Uniform mutation'
+        return 'Non-Uniform mutation'
 
 
 class PermutationSwapMutation(Mutation[PermutationSolution]):
-
+    # 互换突变：适用于排列编码
+    # 随机产生两个互换位点，然后交换各自的值
     def execute(self, solution: PermutationSolution) -> PermutationSolution:
         Check.that(type(solution) is PermutationSolution, "Solution type invalid")
 
         rand = random.random()
 
         if rand <= self.probability:
+            # 随机产生互换位点
             pos_one, pos_two = random.sample(range(solution.number_of_variables - 1), 2)
+            # 互换各自的值
             solution.variables[pos_one], solution.variables[pos_two] = \
                 solution.variables[pos_two], solution.variables[pos_one]
 
@@ -243,6 +252,7 @@ class PermutationSwapMutation(Mutation[PermutationSolution]):
 
 
 class CompositeMutation(Mutation[Solution]):
+    # 混合型编码，调用各自的变异算子进行变异
     def __init__(self, mutation_operator_list:[Mutation]):
         super(CompositeMutation,self).__init__(probability=1.0)
 
@@ -268,27 +278,30 @@ class CompositeMutation(Mutation[Solution]):
 
 
 class ScrambleMutation(Mutation[PermutationSolution]):
-
+    # 在随机选择的染色体片段之间，重新排列
     def execute(self, solution: PermutationSolution) -> PermutationSolution:
-        for i in range(solution.number_of_variables):
-            rand = random.random()
+        rand = random.random()
 
-            if rand <= self.probability:
-                point1 = random.randint(0, len(solution.variables[i]))
-                point2 = random.randint(0, len(solution.variables[i]) - 1)
+        if rand <= self.probability:
+            point1 = random.randint(0, len(solution.variables))
+            point2 = random.randint(0, len(solution.variables) - 1)
 
-                if point2 >= point1:
-                    point2 += 1
-                else:
-                    point1, point2 = point2, point1
+            # 保证point1 < point2
+            if point2 >= point1:
+                point2 += 1
+            else:
+                point1, point2 = point2, point1
+            # 保证两个位点之间距离不超过20
+            if point2 - point1 >= 20:
+                point2 = point1 + 20
 
-                if point2 - point1 >= 20:
-                    point2 = point1 + 20
-
-                values = solution.variables[i][point1:point2]
-                solution.variables[i][point1:point2] = random.sample(values, len(values))
+            values = solution.variables[point1:point2]
+            solution.variables[point1:point2] = random.sample(values, len(values))
 
         return solution
 
     def get_name(self):
-        return 'Scramble'
+        return "Scramble"
+
+
+
