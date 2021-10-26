@@ -11,6 +11,9 @@ Program to  configure and run the NSGA-II algorithm configured with standard set
 """
 
 if __name__ == '__main__':
+    import os
+    os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
+
     problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
@@ -27,9 +30,13 @@ if __name__ == '__main__':
     algorithm.run()
     front = get_non_dominated_solutions(algorithm.get_result())
 
-    # Save results to file
-    print_function_values_to_file(front, 'FUN.' + algorithm.label)
-    print_variables_to_file(front, 'VAR.'+ algorithm.label)
+    # *****************************************************************************************************************
+    from jmetal.core.quality_indicator import InvertedGenerationalDistance
+    reference_front = [s.objectives for s in problem.reference_front]  # 从solution变量中提取np数组形式的reference_front
+    solutions_arr = [s.objectives for s in algorithm.get_result()]  # 从solution变量中提取np数组形式的solutions_arr
+    igd = InvertedGenerationalDistance(reference_front)  # igd指标实例化，传入参考PF
+    igd_value = igd.compute(solutions_arr)  # 调用compute函数，传入算法得到的PF
+    # *****************************************************************************************************************
 
     print('Algorithm (continuous problem): ' + algorithm.get_name())
     print('Problem: ' + problem.get_name())
