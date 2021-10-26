@@ -55,6 +55,7 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
             cross_points = sorted([random.randint(0, permutation_length) for _ in range(2)])
 
             def _repeated(element, collection):
+                # 检查element在collection中是否有重复（即出现次数大于1）
                 c = 0
                 for e in collection:
                     if e == element:
@@ -62,6 +63,7 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
                 return c > 1
 
             def _swap(data_a, data_b, cross_points):
+                # 对传入的两条染色体data_a和data_b，在给定的cross_points中互换片段
                 c1, c2 = cross_points
                 new_a = data_a[:c1] + data_b[c1:c2] + data_a[c2:]
                 new_b = data_b[:c1] + data_a[c1:c2] + data_b[c2:]
@@ -71,17 +73,22 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
                 n = len(swapped[0])
                 c1, c2 = cross_points
                 s1, s2 = swapped
-                map_ = s1[c1:c2], s2[c1:c2]
+                map_ = s1[c1:c2], s2[c1:c2]  # 获取swapped的一个copy
                 for i_chromosome in range(n):
+                    # 只对互换片段之外的片段部分进行检查
                     if not c1 < i_chromosome < c2:
+                        # 分别对两个互换后的染色体进行操作
                         for i_son in range(2):
+                            # 检查第i_chromosome个变量在该染色体中是否重复
                             while _repeated(swapped[i_son][i_chromosome], swapped[i_son]):
+                                # 如果重复了，将该变量的index提取出来
                                 map_index = map_[i_son].index(swapped[i_son][i_chromosome])
+                                # 将重复位置的元素用另一个染色体对应位置的元素替换
                                 swapped[i_son][i_chromosome] = map_[1 - i_son][map_index]
                 return s1, s2
 
-            swapped = _swap(parents[0].variables, parents[1].variables, cross_points)
-            mapped = _map(swapped, cross_points)
+            swapped = _swap(parents[0].variables, parents[1].variables, cross_points)  # 交换片段
+            mapped = _map(swapped, cross_points)  # 对交换片段之外的重复元素进行互换
 
             offspring[0].variables, offspring[1].variables = mapped
 
@@ -100,6 +107,8 @@ class PMXCrossover(Crossover[PermutationSolution, PermutationSolution]):
 class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
     """
     循环交叉，适用于组合优化
+        2021.10.26：这个bug已经在jmetalpy的develop分支里面被修复了。。。只不过一年多了都没没有合并到master分支上，也就是说这一年以来新学
+    jmetalpy的用户都会遇到这个bug。。。
     """
     def __init__(self, probability: float):
         super(CXCrossover, self).__init__(probability=probability)
