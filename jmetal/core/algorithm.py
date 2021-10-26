@@ -135,6 +135,8 @@ class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
                 'COMPUTING_TIME': time.time() - self.start_computing_time}
 
     def init_progress(self) -> None:
+        # 这个变量表示总评价次数，初始化为population_size是因为初始化的时候就已经评价了population_size次，因为初始化的时候
+        # 种群中的每个个体都要计算其初始的目标函数值。
         self.evaluations = self.population_size
 
         observable_data = self.get_observable_data()
@@ -148,6 +150,14 @@ class EvolutionaryAlgorithm(Algorithm[S, R], ABC):
         self.solutions = self.replacement(self.solutions, offspring_population)  # 进化选择：确定最终的子代
 
     def update_progress(self) -> None:
+        """
+        ！！！注意：在jMetalpy中，StoppingByEvaluations指的是达到最大的评价次数就终止进化，注意是评价次数而不是进化代数！！！！！！！！
+            * 在jMetalpy中，每一次进化迭代，都会累加上这次迭代所进行的评价次数，并判断是否满足最大评价次数，若满足则停止；
+            * 在每一次的进化迭代中，评价次数 = 生成的子种群个数；（因为新生成1个个体，就需要评价它的目标函数1次）
+            * 有时候1个进化迭代过程，可能会产生很多次评价，而具体有多少次评价，是由算法本身决定的，例如MOEA/D中，一次迭代只产生一个个体（即对
+              其中一个权重向量进行更新），那么每次进化都只增加一次评价次数；而在NSGA-II中，每次进化生成的个体数由输入参数offspring_population_size
+              决定，因此每1次进化迭代，都会增加很多很多次评价次数，也就是说，不需要几次进化，整个算法就结束了！！！！！
+        """
         self.evaluations += self.offspring_population_size
 
         observable_data = self.get_observable_data()

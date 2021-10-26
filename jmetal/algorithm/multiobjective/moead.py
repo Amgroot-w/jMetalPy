@@ -49,7 +49,7 @@ class MOEAD(GeneticAlgorithm):
             offspring_population_size=1,
             mutation=mutation,
             crossover=crossover,
-            selection=NaryRandomSolutionSelection(2),
+            selection=NaryRandomSolutionSelection(2),  # 一次选择两个个体
             population_evaluator=population_evaluator,
             population_generator=population_generator,
             termination_criterion=termination_criterion
@@ -80,21 +80,23 @@ class MOEAD(GeneticAlgorithm):
     def selection(self, population: List[S]):
         self.current_subproblem = self.permutation.get_next_value()
         self.neighbor_type = self.choose_neighbor_type()
-
+        # 随机选择两种方法中的一种
         if self.neighbor_type == 'NEIGHBOR':
             neighbors = self.neighbourhood.get_neighbors(self.current_subproblem, population)
             mating_population = self.selection_operator.execute(neighbors)
         else:
             mating_population = self.selection_operator.execute(population)
-
+        # 注意：上述操作得到的mating_population含有两个个体，现在再在后面附加上当前个体，进行下一步的交叉操作
         mating_population.append(population[self.current_subproblem])
 
         return mating_population
 
     def reproduction(self, mating_population: List[S]) -> List[S]:
+        # 设置当前个体
         self.crossover_operator.current_individual = self.solutions[self.current_subproblem]
-
+        # 差分进化交叉
         offspring_population = self.crossover_operator.execute(mating_population)
+        # 变异
         self.mutation_operator.execute(offspring_population[0])
 
         return offspring_population

@@ -1,8 +1,7 @@
-from math import pi, sin, sqrt
 
+from math import pi, sin, sqrt, cos
 from jmetal.core.problem import FloatProblem
 from jmetal.core.solution import FloatSolution
-
 """
 .. module:: UF
    :platform: Unix, Windows
@@ -56,17 +55,10 @@ class UF1(FloatProblem):
         solution.objectives[0] = x[0] + 2.0 * sum1 /(1.0 * count1)
         solution.objectives[1] = 1.0 - sqrt(x[0]) + 2.0 * sum2 / (1.0 * count2)
 
-
         return solution
 
     def get_name(self):
         return 'UF1'
-
-from math import pi, sin, sqrt, cos, pow, exp
-
-from jmetal.core.problem import FloatProblem
-from jmetal.core.solution import FloatSolution
-import numpy as np
 
 
 class UF8(FloatProblem):
