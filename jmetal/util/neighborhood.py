@@ -54,6 +54,9 @@ class WeightVectorNeighborhood(WeightNeighborhood):
         self.__initialize_uniform_weight(weight_vector_size, number_of_weight_vectors)  # 初始化均匀分布的权重
         self.__initialize_neighborhood()  # 初始化权重向量的领域
 
+    """
+    自己的算法可以定义一个类，集成这个类并重写下面这个函数
+    """
     # 初始化均匀分布的权重向量（在构造函数时即调用）
     def __initialize_uniform_weight(self, weight_vector_size: int, number_of_weight_vectors: int) -> None:
         """ Precomputed weights from
@@ -84,7 +87,7 @@ class WeightVectorNeighborhood(WeightNeighborhood):
             else:
                 raise FileNotFoundError('Failed to initialize weights: {} not found'.format(file_path))
 
-    # 初始化领域（在构造函数时即调用）
+    # 初始化邻域（在构造函数时即调用）
     def __initialize_neighborhood(self) -> None:
         distance = numpy.zeros((len(self.weight_vectors), len(self.weight_vectors)))  # 初始化距离矩阵
 
