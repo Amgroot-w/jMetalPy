@@ -43,7 +43,7 @@ class WeightNeighborhood(Neighborhood[Solution], ABC):
 
 
 class WeightVectorNeighborhood(WeightNeighborhood):
-
+    """ 用来产生权重向量、初始化领域、获取领域等操作 """
     def __init__(self,
                  number_of_weight_vectors: int,
                  neighborhood_size: int,
@@ -51,9 +51,10 @@ class WeightVectorNeighborhood(WeightNeighborhood):
                  weights_path: str = None):
         super(WeightVectorNeighborhood, self).__init__(number_of_weight_vectors, neighborhood_size, weight_vector_size,
                                                        weights_path)
-        self.__initialize_uniform_weight(weight_vector_size, number_of_weight_vectors)
-        self.__initialize_neighborhood()
+        self.__initialize_uniform_weight(weight_vector_size, number_of_weight_vectors)  # 初始化均匀分布的权重
+        self.__initialize_neighborhood()  # 初始化权重向量的领域
 
+    # 初始化均匀分布的权重向量（在构造函数时即调用）
     def __initialize_uniform_weight(self, weight_vector_size: int, number_of_weight_vectors: int) -> None:
         """ Precomputed weights from
 
@@ -63,11 +64,14 @@ class WeightVectorNeighborhood(WeightNeighborhood):
 
         * http://dces.essex.ac.uk/staff/qzhang/MOEAcompetition/CEC09final/code/ZhangMOEADcode/moead030510.rar
         """
+        # 二维的权重向量，通过下面的程序产生
         if weight_vector_size == 2:
             for i in range(0, number_of_weight_vectors):
                 v = 1.0 * i / (number_of_weight_vectors - 1)
                 self.weight_vectors[i, 0] = v
                 self.weight_vectors[i, 1] = 1 - v
+
+        # 三维及以上的权重向量，通过读取文件产生
         else:
             file_name = 'W{}D_{}.dat'.format(weight_vector_size, number_of_weight_vectors)
             file_path = self.weights_path + '/' + file_name
@@ -80,24 +84,27 @@ class WeightVectorNeighborhood(WeightNeighborhood):
             else:
                 raise FileNotFoundError('Failed to initialize weights: {} not found'.format(file_path))
 
+    # 初始化领域（在构造函数时即调用）
     def __initialize_neighborhood(self) -> None:
-        distance = numpy.zeros((len(self.weight_vectors), len(self.weight_vectors)))
+        distance = numpy.zeros((len(self.weight_vectors), len(self.weight_vectors)))  # 初始化距离矩阵
 
         for i in range(len(self.weight_vectors)):
             for j in range(len(self.weight_vectors)):
-                distance[i][j] = numpy.linalg.norm(self.weight_vectors[i] - self.weight_vectors[j])
+                distance[i][j] = numpy.linalg.norm(self.weight_vectors[i] - self.weight_vectors[j])  # 计算权重间的欧氏距离
 
-            indexes = numpy.argsort(distance[i, :])
-            self.neighborhood[i, :] = indexes[0:self.neighborhood_size]
+            indexes = numpy.argsort(distance[i, :])  # 根据欧氏距离从小到大排序
+            self.neighborhood[i, :] = indexes[0:self.neighborhood_size]  # 找到各自的邻域，即欧氏距离最小的一系列权重向量的index
 
+    # 获取指定index解的邻域解集（一个index对应一个解，也对应着一个权重向量）
     def get_neighbors(self, index: int, solution_list: List[Solution]) -> List[Solution]:
-        neighbors_indexes = self.neighborhood[index]
+        neighbors_indexes = self.neighborhood[index]  # 获取指定index的邻居的index集合
 
         if any(i > len(solution_list) for i in neighbors_indexes):
             raise IndexError('Neighbor index out of range')
 
-        return [solution_list[i] for i in neighbors_indexes]
+        return [solution_list[i] for i in neighbors_indexes]  # 通过index获取对应的solution，即返回邻居解集
 
+    # 调取总的邻居index集合
     def get_neighborhood(self):
         return self.neighborhood
 
