@@ -46,7 +46,7 @@ class MOEAD(GeneticAlgorithm):
         super(MOEAD, self).__init__(
             problem=problem,
             population_size=population_size,
-            offspring_population_size=1,
+            offspring_population_size=1,  # 子种群大小为1（MOEAD算法一次只更新一个个体解/权重向量的邻域）
             mutation=mutation,
             crossover=crossover,
             selection=NaryRandomSolutionSelection(2),  # 一次选择两个个体
