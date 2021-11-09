@@ -16,7 +16,9 @@ R = List[S]
 
 
 class GDE3(EvolutionaryAlgorithm[FloatSolution, FloatSolution]):
-
+    """
+    GDE3: Generalized Differential Evolution 3th（第三代广义差分进化算法）
+    """
     def __init__(self,
                  problem: Problem,
                  population_size: int,
@@ -41,6 +43,7 @@ class GDE3(EvolutionaryAlgorithm[FloatSolution, FloatSolution]):
         self.termination_criterion = termination_criterion
         self.observable.register(termination_criterion)
 
+    # 差分进化选择（为pop中每一个个体，选择3个父代个体，选择结果存储在mating_pool中）
     def selection(self, population: List[FloatSolution]) -> List[FloatSolution]:
         mating_pool = []
 
@@ -57,17 +60,18 @@ class GDE3(EvolutionaryAlgorithm[FloatSolution, FloatSolution]):
 
         for solution in self.solutions:
             self.crossover_operator.current_individual = solution
-            parents = mating_pool[first_parent_index:first_parent_index + 3]
+            parents = mating_pool[first_parent_index:first_parent_index + 3]  # 获取个体i的三个父代
             first_parent_index += 3
-
+            # 差分进化交叉（对应标准DE算法中的“变异"算子）
             offspring_population.append(self.crossover_operator.execute(parents)[0])
 
         return offspring_population
 
     def replacement(self, population: List[S], offspring_population: List[FloatSolution]) -> List[List[FloatSolution]]:
         tmp_list = []
-
+        # 对每一个个体进行标准DE算法中的“选择”算子操作
         for solution1, solution2 in zip(self.solutions, offspring_population):
+            # 比较当前个体和新个体
             result = self.dominance_comparator.compare(solution1, solution2)
             if result == -1:
                 tmp_list.append(solution1)

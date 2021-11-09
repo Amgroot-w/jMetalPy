@@ -399,10 +399,20 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
             什么父代由外部决定，与本class无关。
     """
 
+    # ***注意：在jMetalPy中，差分进化(DE)算法的实现包括两个类：
+    #           -- 差分进化选择（DifferentialEvolutionSelection）
+    #           -- 差分进化交叉（DifferentialEvolutionCrossover）
+    #         没有差分进化变异！！！而且以上两个类必须配套使用！！！
+    #
+    # 在这里，jMetalPy只实现了 DE/rand/1/bin 和 DE/best/1/bin 两个DE算法，具体调用的是哪个，由传入的三个父代个体中的第三个父代个体决定，如
+    # 果第三个个体时rand个体，就是DE/rand/1/bin算法，如果是best个体，就是DE/best/1/bin算法。
+    # 其他的DE变体，如DE/rand/2/bin, DE/best/2/bin, DE/rand-to-best/bin, DE/current-to-rand/bin, DE/current-to-best/bin, 需要
+    # 自己实现，直接集成crossover类，然后重写execute()方法即可。
+
     def __init__(self, CR: float, F: float, K: float = 0.5):
         super(DifferentialEvolutionCrossover, self).__init__(probability=1.0)
-        self.CR = CR
-        self.F = F
+        self.CR = CR  # 交叉概率
+        self.F = F  # 缩放因子
         self.K = K  # 这个变量是干嘛用的？
 
         self.current_individual: FloatSolution = None  # “current_individual”这个变量会在外部被赋值！！！
@@ -418,6 +428,7 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
         number_of_variables = parents[0].number_of_variables
         rand = random.randint(0, number_of_variables - 1)
 
+        # DE算法中，对pop中的每一个个体逐个进行进化操作，而不是像别的算法那样随机选择，导致有的个体会从未被选择上
         for i in range(number_of_variables):
             # 当i=rand时不用判断直接交叉，当i为其他值时以self.CR为概率进行交叉
             if random.random() < self.CR or i == rand:
@@ -428,11 +439,13 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
                     value = child.lower_bound[i]
                 if value > child.upper_bound[i]:
                     value = child.upper_bound[i]
-            # 若当前位点经过随机概率之后，不进行交叉
+            # 不满足交叉概率，不进行交叉，直接赋值
             else:
                 value = child.variables[i]  # 直接将当前个体的在该位点的值赋给该位点
 
             child.variables[i] = value  # 将经过交叉操作后的实数值赋值给该位点
+
+        # 注意：标准DE算法中的“选择”算子，没有在此处实现，而是在算法类中实现（算法GDE3类的replacement()方法中，实现了这个“选择”过程）
 
         return [child]
 

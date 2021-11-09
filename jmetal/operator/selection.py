@@ -131,9 +131,13 @@ class NaryRandomSolutionSelection(Selection[List[S], S]):
     def get_name(self) -> str:
         return 'Nary random_search solution selection'
 
-# 选择算子5：差分进化选择
+# 选择算子5：差分进化选择（需要与差分进化交叉类一起使用）
 class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
-    """ 差分进化选择：怎么选的没看懂！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ """
+    """
+    适用于差分进化DE算法，为DE算法的变异、交叉操作提前选择三个变量
+    **注意：此处的选择算子，在标准DE算法中属于“变异”算子的一部分；而标准DE算法中的“选择”算子，则指的是当变异、交叉算子均完成后，选择当前代
+    个体i和新个体new_i中适应度较大的个体作为下一代的个体i（即贪婪选择/二元锦标赛选择）
+    """
     def __init__(self):
         super(DifferentialEvolutionSelection, self).__init__()
         self.index_to_exclude = None
@@ -152,6 +156,7 @@ class DifferentialEvolutionSelection(Selection[List[S], List[S]]):
 
         return [front[i] for i in selected_indexes]
 
+    # 选择需要排除的个体，以防止选到重复个体
     def set_index_to_exclude(self, index: int):
         self.index_to_exclude = index
 
