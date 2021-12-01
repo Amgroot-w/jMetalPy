@@ -19,10 +19,10 @@ if __name__ == '__main__':
     # import os
     # os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
 
-    problem = UF8()
+    problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
-    max_evaluations = 1000
+    max_evaluations = 2000
     algorithm = NSGAII(
         problem=problem,
         population_size=100,
