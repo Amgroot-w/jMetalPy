@@ -11,9 +11,6 @@ Program to  configure and run the NSGA-II algorithm configured with standard set
 """
 
 if __name__ == '__main__':
-    import os
-    os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd()))))
-
     problem = ZDT1()
     problem.reference_front = read_solutions(filename='resources/reference_front/ZDT1.pf')
 
