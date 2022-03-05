@@ -122,7 +122,7 @@ class CXCrossover(Crossover[PermutationSolution, PermutationSolution]):
         rand = random.random()
 
         if rand <= self.probability:
-            # idx = random.randint(0, len(parents[0].variables[i]) - 1)  # 此处有个小bug
+            # idx = random.randint(0, len(parents[0].variables[i]) - 1)  # BUG 此处有个小bug
             idx = random.randint(0, len(parents[0].variables) - 1)
             curr_idx = idx
             cycle = []
