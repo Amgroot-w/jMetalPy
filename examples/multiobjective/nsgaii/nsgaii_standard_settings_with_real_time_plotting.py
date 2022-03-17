@@ -35,9 +35,9 @@ if __name__ == '__main__':
         termination_criterion=StoppingByEvaluations(max_evaluations=max_evaluations)
     )
 
-    # # 1.实时图：streaming
-    # algorithm.observable.register(observer=ProgressBarObserver(max=max_evaluations))
-    # algorithm.observable.register(observer=VisualizerObserver(reference_front=problem.reference_front))
+    # 1.实时图：streaming
+    algorithm.observable.register(observer=ProgressBarObserver(max=max_evaluations))
+    algorithm.observable.register(observer=VisualizerObserver(reference_front=problem.reference_front))
 
     # 运行算法
     algorithm.run()
@@ -49,15 +49,15 @@ if __name__ == '__main__':
 
     # 3.交互图：interactive
     # 3.1 基于plotly框架的HTML交互
-    # plot_front = InteractivePlot(title='Pareto front approximation. Problem: ' + problem.get_name(), reference_front=problem.reference_front, axis_labels=problem.obj_labels)
-    # plot_front.plot(front, label=algorithm.label, filename=algorithm.get_name())
-    # # 3.2 基于matplotlib的和弦图
-    # from jmetal.lab.visualization.chord_plot import chord_diagram
-    # chord_diagram(solutions=front)  # chord_diagram是个函数，不是一个类，因此直接运行此函数即可
+    plot_front = InteractivePlot(title='Pareto front approximation. Problem: ' + problem.get_name(), reference_front=problem.reference_front, axis_labels=problem.obj_labels)
+    plot_front.plot(front, label=algorithm.label, filename=algorithm.get_name())
+    # 3.2 基于matplotlib的和弦图
+    from jmetal.lab.visualization.chord_plot import chord_diagram
+    chord_diagram(solutions=front)  # chord_diagram是个函数，不是一个类，因此直接运行此函数即可
 
-    # # Save results to file
-    # print_function_values_to_file(front, 'FUN.' + algorithm.label)
-    # print_variables_to_file(front, 'VAR.'+ algorithm.label)
+    # Save results to file
+    print_function_values_to_file(front, 'FUN.' + algorithm.label)
+    print_variables_to_file(front, 'VAR.'+ algorithm.label)
 
     print('Algorithm (continuous problem): ' + algorithm.get_name())
     print('Problem: ' + problem.get_name())
