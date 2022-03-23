@@ -395,7 +395,8 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
     individual or a random_search one. The implementation of both variants are the same, due to that the parent selection is
     external to the crossover operator.
 
-    翻译翻译：best and rand variants取决于传入的3个父代中的第三个，取决于它是best个体还是random个体。而这两种对应的实现方法是一致的，因为传入什么父代由外部决定，与本class无关。
+    翻译翻译：best and rand variants取决于传入的3个父代中的第三个，取决于它是best个体还是random个体。而这两种对应的实现方法是一致的，因为传入
+            什么父代由外部决定，与本class无关。
     """
 
     # ***注意：在jMetalPy中，差分进化(DE)算法的实现包括两个类：
@@ -406,7 +407,7 @@ class DifferentialEvolutionCrossover(Crossover[FloatSolution, FloatSolution]):
     # 在这里，jMetalPy只实现了 DE/rand/1/bin 和 DE/best/1/bin 两个DE算法，具体调用的是哪个，由传入的三个父代个体中的第三个父代个体决定，如
     # 果第三个个体时rand个体，就是DE/rand/1/bin算法，如果是best个体，就是DE/best/1/bin算法。
     # 其他的DE变体，如DE/rand/2/bin, DE/best/2/bin, DE/rand-to-best/bin, DE/current-to-rand/bin, DE/current-to-best/bin, 需要
-    # 自己实现，直接继承crossover类，然后重写execute()方法即可。
+    # 自己实现，直接集成crossover类，然后重写execute()方法即可。
 
     def __init__(self, CR: float, F: float, K: float = 0.5):
         super(DifferentialEvolutionCrossover, self).__init__(probability=1.0)

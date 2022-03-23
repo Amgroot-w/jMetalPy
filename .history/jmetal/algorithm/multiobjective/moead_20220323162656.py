@@ -79,12 +79,7 @@ class MOEAD(GeneticAlgorithm):
 
     def selection(self, population: List[S]):
         """
-        由于jmetalpy实现的MOEA/D算法默认采用差分进化(DE)交叉算子，它需要3个个体解作为父代，产生1个子代解，因此
-        这里在选择的时候，已经写死了mating_population的长度为3，其中前两个由选择算子产生（随机选择），最后一个
-        是append了当前个体.
-
-        所以，如果自己要使用别的交叉算子，比如父代、子代个体数均为2的SBX交叉，那么不仅交叉算子要传入SBXCrossover，
-        也必须重写这个selection函数，让该函数返回的mating_population的长度为2才行。
+        由于jmetalpy实现的MOEA/D算法默认采用差分进化(DE)交叉算子，它需要3个个体解作为父代，产生1各自带
         """
         self.current_subproblem = self.permutation.get_next_value()
         self.neighbor_type = self.choose_neighbor_type()
@@ -103,17 +98,17 @@ class MOEAD(GeneticAlgorithm):
     def reproduction(self, mating_population: List[S]) -> List[S]:
         # 设置当前个体
         self.crossover_operator.current_individual = self.solutions[self.current_subproblem]
-        # 差分进化交叉（输入3个父代解，产生1个子代解）
+        # 差分进化交叉
         offspring_population = self.crossover_operator.execute(mating_population)
         # 变异
         self.mutation_operator.execute(offspring_population[0])
-        # 此处返回的offspring_population只含有1个个体
+
         return offspring_population
 
     def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
-        # 在MOEA/D中，population是种群，offspring_population只含有1个解
+        # 在MOEA/D中，population是种群，offspring_population只含有一个解
         new_solution = offspring_population[0]
-        # 根据新产生的这一个解，来更新聚合函数的理想点
+        # 根据新产生的这一个解，来更新适应度函数的信息
         self.fitness_function.update(new_solution.objectives)
         # 根据新产生的这一个解，来更新当前子问题的邻域（也就是说，每1次迭代只更新1个子问题/1个解/1个权重向量！）
         new_population = self.update_current_subproblem_neighborhood(new_solution, population)

@@ -113,7 +113,7 @@ class MOEAD(GeneticAlgorithm):
     def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
         # 在MOEA/D中，population是种群，offspring_population只含有1个解
         new_solution = offspring_population[0]
-        # 根据新产生的这一个解，来更新聚合函数的理想点
+        # 根据新产生的这一个解，来更新适应度函数的信息
         self.fitness_function.update(new_solution.objectives)
         # 根据新产生的这一个解，来更新当前子问题的邻域（也就是说，每1次迭代只更新1个子问题/1个解/1个权重向量！）
         new_population = self.update_current_subproblem_neighborhood(new_solution, population)

@@ -103,17 +103,17 @@ class MOEAD(GeneticAlgorithm):
     def reproduction(self, mating_population: List[S]) -> List[S]:
         # 设置当前个体
         self.crossover_operator.current_individual = self.solutions[self.current_subproblem]
-        # 差分进化交叉（输入3个父代解，产生1个子代解）
+        # 差分进化交叉（输入3个父代，产生1个子代）
         offspring_population = self.crossover_operator.execute(mating_population)
         # 变异
         self.mutation_operator.execute(offspring_population[0])
-        # 此处返回的offspring_population只含有1个个体
+
         return offspring_population
 
     def replacement(self, population: List[S], offspring_population: List[S]) -> List[S]:
-        # 在MOEA/D中，population是种群，offspring_population只含有1个解
+        # 在MOEA/D中，population是种群，offspring_population只含有一个解
         new_solution = offspring_population[0]
-        # 根据新产生的这一个解，来更新聚合函数的理想点
+        # 根据新产生的这一个解，来更新适应度函数的信息
         self.fitness_function.update(new_solution.objectives)
         # 根据新产生的这一个解，来更新当前子问题的邻域（也就是说，每1次迭代只更新1个子问题/1个解/1个权重向量！）
         new_population = self.update_current_subproblem_neighborhood(new_solution, population)

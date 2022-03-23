@@ -43,7 +43,7 @@ class WeightNeighborhood(Neighborhood[Solution], ABC):
 
 
 class WeightVectorNeighborhood(WeightNeighborhood):
-    """ 用来产生权重向量、初始化领域、获取邻域等操作 """
+    """ 用来产生权重向量、初始化领域、获取领域等操作 """
     def __init__(self,
                  number_of_weight_vectors: int,
                  neighborhood_size: int,
@@ -55,7 +55,7 @@ class WeightVectorNeighborhood(WeightNeighborhood):
         self.__initialize_neighborhood()  # 初始化权重向量的领域
 
     """
-    自己的算法可以定义一个类，继承这个类并重写下面这个函数,,,,,,重写不了啊啊？？因为这玩意儿已经在__init__()里面调用了！
+    自己的算法可以定义一个类，集成这个类并重写下面这个函数,,,,,,重写不了啊啊？？因为这玩意儿已经在__init__()里面调用了！
     """
     # 初始化均匀分布的权重向量（在构造函数时即调用）
     def __initialize_uniform_weight(self, weight_vector_size: int, number_of_weight_vectors: int) -> None:
